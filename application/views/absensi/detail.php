@@ -87,13 +87,19 @@
                             <?php if($absen): ?>
                                 <?php foreach($hari as $i => $h): ?>
                                     <?php
-                                        $key = array_search($h['tgl'], array_column($absen, 'tgl'));
-                                        $absen_harian = $key !== false ? $absen[$key] : '';
+                                        // Cari item dalam $absen yang memiliki tgl yang sama dengan $h['tgl']
+                                        $absen_harian = null;
+                                        foreach($absen as $item) {
+                                            if($item['tgl'] == $h['tgl']) {
+                                                $absen_harian = $item;
+                                                break;
+                                            }
+                                        }
                                         
                                         $row_class = '';
                                         if(in_array($h['hari'], ['Sabtu', 'Minggu'])) {
                                             $row_class = 'table-secondary';
-                                        } elseif($absen_harian == '') {
+                                        } elseif($absen_harian === null) {
                                             $row_class = 'table-danger';
                                         }
                                     ?>
@@ -110,7 +116,7 @@
                                                 </span>
                                             <?php else: ?>
                                                 <?php 
-                                                    $jam_masuk = check_jam(@$absen_harian['jam_masuk'], 'Masuk');
+                                                    $jam_masuk = $absen_harian ? check_jam($absen_harian['jam_masuk'], 'Masuk') : 'Tidak Absen';
                                                     $badge_class = strpos($jam_masuk, 'Tidak') !== false ? 'bg-danger' : 'bg-success';
                                                     $icon_class = strpos($jam_masuk, 'Tidak') !== false ? 'fa-times-circle' : 'fa-check-circle';
                                                 ?>
@@ -127,7 +133,7 @@
                                                 </span>
                                             <?php else: ?>
                                                 <?php 
-                                                    $jam_pulang = check_jam(@$absen_harian['jam_pulang'], 'Pulang');
+                                                    $jam_pulang = $absen_harian ? check_jam($absen_harian['jam_pulang'], 'Pulang') : 'Tidak Absen';
                                                     $badge_class = strpos($jam_pulang, 'Tidak') !== false ? 'bg-danger' : 'bg-success';
                                                     $icon_class = strpos($jam_pulang, 'Tidak') !== false ? 'fa-times-circle' : 'fa-check-circle';
                                                 ?>
@@ -155,4 +161,4 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
